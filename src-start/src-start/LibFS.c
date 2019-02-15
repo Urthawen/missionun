@@ -4,27 +4,57 @@
 // variable errno pour gerer les erreurs
 int osErrno;
 
-int 
+#define MAGICNUMBER 1111
+
+int
 FS_Boot(char *path)
 {
     printf("FS_Boot %s\n", path);
-    
+
     if (Disk_Init() == -1) {
-	printf("Disk_Init() failed\n");
-	osErrno = E_GENERAL;
-	return -1;
+    	printf("Disk_Init() failed\n");
+    	osErrno = E_GENERAL;
+    	return -1;
     }
 
-    // TODO...
+    if (Disk_Load(path) == -1) {
+    	printf("Disk_Load() failed\n");
+    	osErrno = E_GENERAL;
+    	return -1;
+    }
+
+    char* buffer = new char[4];
+
+    if(Disk_Read(0, buffer) == -1){
+      printf("Disk_Read() failed\n", );
+      osErrno = E_GENERAL;
+      return -1;
+    }
+
+    if((int)buffer[508] != MAGICNUMBER){
+      if(FS_Format()==-1){
+        
+      }
+    }
 
     return 0;
+}
+
+int FS_Format(){
+  return 0;
 }
 
 int
 FS_Sync()
 {
     printf("FS_Sync\n");
-    // TODO...
+
+      if(Disk_Save(disk) == -1){
+        printf("Disk_Save() failed\n");
+      	osErrno = E_GENERAL;
+      	return -1;
+      }
+
     return 0;
 }
 

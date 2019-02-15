@@ -6,6 +6,16 @@ int osErrno;
 
 #define MAGICNUMBER 1111
 
+typedef struct _superbloc{
+  char unused[508];
+  int magicnumber;
+} superbloc;
+
+
+int FS_Format(){
+  return 0;
+}
+
 int
 FS_Boot(char *path)
 {
@@ -18,42 +28,37 @@ FS_Boot(char *path)
     }
 
     if (Disk_Load(path) == -1) {
-    	printf("Disk_Load() failed\n");
-    	osErrno = E_GENERAL;
-    	return -1;
+      if(FS_Format() == -1){
+        printf("Disk_Load() failed\n");
+        osErrno = E_GENERAL;
+        return -1;
+      }
     }
 
-    char* buffer = new char[4];
+    superbloc buffer;
 
-    if(Disk_Read(0, buffer) == -1){
-      printf("Disk_Read() failed\n", );
+    if(Disk_Read(0, buffer.unused) == -1){
+      printf("Disk_Read() failed\n");
       osErrno = E_GENERAL;
       return -1;
     }
 
-    if((int)buffer[508] != MAGICNUMBER){
-      if(FS_Format()==-1){
-        
-      }
+    if((int)(buffer.magicnumber) != MAGICNUMBER){
+      printf("WTF NUMBER WRONG MAN\n");
+      osErrno = E_GENERAL;
+      return -1;
+    }else{
+      printf("OK\n");
     }
 
     return 0;
 }
 
-int FS_Format(){
-  return 0;
-}
 
 int
 FS_Sync()
 {
     printf("FS_Sync\n");
-
-      if(Disk_Save(disk) == -1){
-        printf("Disk_Save() failed\n");
-      	osErrno = E_GENERAL;
-      	return -1;
-      }
 
     return 0;
 }
